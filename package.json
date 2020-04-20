@@ -1,0 +1,24 @@
+{
+    "name": "@jbuncle/webmon",
+    "version": "1.0.0",
+    "description": "Website Monitoring Tool",
+    "scripts": {
+        "compile": "tsc --strict -p ./tsconfig.json",
+        "build": "npm run compile",
+        "run": "ts-node src/index.ts"
+    },
+    "dependencies": {
+        "@types/cron": "^1.7.2",
+        "@types/nodemailer": "^6.4.0",
+        "cron": "^1.8.2",
+        "nodemailer": "^6.4.6",
+        "request": "^2.88.2",
+        "request-promise-native": "^1.0.8"
+    },
+    "devDependencies": {
+        "@types/request": "^2.48.4",
+        "@types/request-promise-native": "^1.0.17",
+        "ts-node": "^4.1.0",
+        "typescript": "^2.9.2"
+    }
+}
