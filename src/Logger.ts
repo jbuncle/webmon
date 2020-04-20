@@ -25,6 +25,12 @@ export class Logger {
     }
 
     private getDateString(): string {
-        return new Date().toISOString().split('T', 1).pop();
+        const isoString: string = new Date().toISOString();
+        const parts = isoString.split('T', 1);
+        const date: string | undefined = parts.pop();
+        if (date === undefined) {
+            throw new Error("Failed to determine date");
+        }
+        return date;
     }
 }
