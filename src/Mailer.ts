@@ -58,7 +58,8 @@ export class Mailer {
 
         this.createTransporter().sendMail(mailOptions, function (error: Error | null, info: any) {
             if (error) {
-                throw new Error(`Failed to send mail due to '${error.message}'`);
+                // Don't kill entire process if mail is undeliverable.
+                console.error(`Failed to send mail due to '${error.message}'`);
             }
         });
     }
