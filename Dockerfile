@@ -8,7 +8,7 @@ RUN npm install
 
 RUN npm run ncc
 
-FROM node
+FROM node:slim
 
 VOLUME '/var/log/webmon'
 VOLUME '/etc/webmon'

@@ -1,6 +1,5 @@
 /node_modules
 /nbproject/private
 /dist
-/package-lock.json
 /configuration.json
 /*.log

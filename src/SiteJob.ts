@@ -31,12 +31,18 @@ export class SiteJob {
                 const duration: number = httpResponse.duration;
                 const timestamp: number = httpResponse.time;
 
-                const matches: RegExpExecArray | null = this.regex.exec(httpResponse.body);
-                const passedTest: boolean = matches !== null && matches.length > 0;
-                if (passedTest === false) {
-                    message = 'Failed to match response to ' + this.regex.source;
+                let passedTest: boolean;
+                if (statusCode !== 200) {
+                    passedTest = false;
+                } else {
+
+                    const matches: RegExpExecArray | null = this.regex.exec(httpResponse.body);
+                    passedTest = matches !== null && matches.length > 0;
+                    if (passedTest === false) {
+                        message = 'Failed to match response to ' + this.regex.source;
+                    }
                 }
-                
+
                 callback({
                     url,
                     statusCode,

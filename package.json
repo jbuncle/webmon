@@ -4,7 +4,7 @@
     "description": "Website Monitoring Tool",
     "scripts": {
         "ncc": "ncc build ./src/index.ts --out ./dist/",
-        "run": "ts-node src/index.ts ./configuration.json"
+        "start": "ts-node src/index.ts ./configuration.json"
     },
     "dependencies": {
         "@types/nodemailer": "^6.4.0",
