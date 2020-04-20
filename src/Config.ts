@@ -2,7 +2,9 @@ import {MailSettings} from "./Mailer";
 import * as fs from 'fs';
 
 export interface Configuration {
-    logPath?: string,
+    // Delay before each site check, used to offset/stagger requests (seconds)
+    delay: number;
+    logPath?: string;
     mailSettings: MailSettings;
     sites: Array<{
         mailto: Array<string>;

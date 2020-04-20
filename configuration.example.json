@@ -1,4 +1,5 @@
 {
+    "delay": 30,
     "mailSettings": {
         "from": "you@example.co.uk",
         "host": "smtp.host.co.uk",

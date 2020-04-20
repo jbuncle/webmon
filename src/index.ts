@@ -13,8 +13,7 @@ import {Scheduler} from './Scheduler';
 const conffile: string = process.argv[2];
 const configLoader: ConfigLoader = new ConfigLoader(conffile);
 const configuration: Configuration = configLoader.getConfiguration();
-const scheduler: Scheduler = new Scheduler(10);
-
+const scheduler: Scheduler = new Scheduler(configuration.delay);
 
 const mailSettings: MailSettings = configuration.mailSettings;
 const mailer: Mailer = new Mailer(mailSettings);
@@ -45,16 +44,19 @@ for (const site of configuration.sites) {
         siteJob.run((result: SiteJobResult) => {
 
             // Indicate job ran
-            process.stdout.write('.');
             logger.appendLine(result);
 
             if (!result.success) {
+                process.stdout.write('x');
 
                 mailer.sendMail({
                     to: site.mailto,
                     subject: `Site check failed for ${site.url}`,
                     text: JSON.stringify(result)
                 });
+            } else {
+                process.stdout.write('.');
+
             }
         });
     });
