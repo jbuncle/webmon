@@ -1,0 +1,18 @@
+{
+    "mailSettings": {
+        "from": "you@example.co.uk",
+        "host": "smtp.host.co.uk",
+        "port": 587,
+        "secure": false,
+        "user": "username",
+        "password": "*******"
+    },
+    "sites": [
+        {
+            "url": "http://www.google.co.uk",
+            "test": "Google Search",
+            "interval": 300,
+            "mailto": ["me@mail.com"]
+        }
+    ]
+}

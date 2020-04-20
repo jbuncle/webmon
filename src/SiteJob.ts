@@ -1,5 +1,3 @@
-
-import {CronJob} from 'cron';
 import {HttpRequester, HttpResponse, HttpRequestError} from './HttpRequester';
 
 
@@ -14,7 +12,7 @@ export interface SiteJobResult {
 
 export class SiteJob {
     public constructor(
-        private readonly cron: string,
+
         private readonly siteChecker: HttpRequester,
         private readonly regex: RegExp,
     ) {
@@ -23,41 +21,40 @@ export class SiteJob {
 
     public run(callback: (result: SiteJobResult) => void): void {
 
-        const job = new CronJob(this.cron, (): void => {
+        this.siteChecker.checkSite((result: HttpResponse | HttpRequestError): void => {
+            if ('statusCode' in result) {
+                const httpResponse: HttpResponse = result;
 
-            this.siteChecker.checkSite((result: HttpResponse | HttpRequestError): void => {
-                if ('statusCode' in result) {
-                    const httpResponse: HttpResponse = result;
+                const statusCode: number = httpResponse.statusCode;
+                let message: string = httpResponse.message;
+                const url: string = httpResponse.url;
+                const duration: number = httpResponse.duration;
+                const timestamp: number = httpResponse.time;
 
-                    const statusCode: number = httpResponse.statusCode;
-                    let message: string = httpResponse.message;
-                    const url: string = httpResponse.url;
-                    const duration: number = httpResponse.duration;
-                    const timestamp: number = httpResponse.time;
-                    const matches: boolean = this.regex.test(httpResponse.body);
-                    if (matches === false) {
-                        message = 'Failed to match response to ' + this.regex.source;
-                    }
-                    callback({
-                        url,
-                        statusCode,
-                        message,
-                        success: matches,
-                        duration,
-                        timestamp,
-                    });
-                } else {
-                    callback({
-                        url: result.url,
-                        message: result.error,
-                        success: false,
-                        duration: result.duration,
-                        timestamp: result.time,
-                    });
+                const matches: RegExpExecArray | null = this.regex.exec(httpResponse.body);
+                const passedTest: boolean = matches !== null && matches.length > 0;
+                if (passedTest === false) {
+                    message = 'Failed to match response to ' + this.regex.source;
                 }
-            });
-
+                
+                callback({
+                    url,
+                    statusCode,
+                    message,
+                    success: passedTest,
+                    duration,
+                    timestamp,
+                });
+            } else {
+                callback({
+                    url: result.url,
+                    message: result.error,
+                    success: false,
+                    duration: result.duration,
+                    timestamp: result.time,
+                });
+            }
         });
-        job.start();
+
     }
 }

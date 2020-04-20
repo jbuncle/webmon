@@ -5,20 +5,56 @@ import {HttpRequester} from './HttpRequester';
 import {SiteJob, SiteJobResult} from './SiteJob';
 import {Logger} from './Logger';
 import {parse} from 'url';
+import {ConfigLoader, Configuration} from './Config';
+import {MailSettings, Mailer} from './Mailer';
+import {Scheduler} from './Scheduler';
 
-const url = 'https://www.google.co.uk';
 
-const hostname: string | null = parse(url).hostname;
-if (hostname === null) {
-    throw new Error(`Failed to get hostname from url '${url}'`);
+const conffile: string = process.argv[2];
+const configLoader: ConfigLoader = new ConfigLoader(conffile);
+const configuration: Configuration = configLoader.getConfiguration();
+const scheduler: Scheduler = new Scheduler(10);
+
+
+const mailSettings: MailSettings = configuration.mailSettings;
+const mailer: Mailer = new Mailer(mailSettings);
+mailer.test();
+
+
+const logPath: string = (configuration.logPath) ? configuration.logPath : '/var/log/webmon';
+for (const site of configuration.sites) {
+
+    const url: string = site.url;
+    const test: string = site.test;
+
+    const hostname: string | null = parse(url).hostname;
+    if (hostname === null) {
+        throw new Error(`Failed to get hostname from url '${url}'`);
+    }
+
+    const siteChecker: HttpRequester = new HttpRequester(url);
+    const regex: RegExp = new RegExp(test);
+
+    const logger: Logger = new Logger(logPath, hostname);
+    const siteJob: SiteJob = new SiteJob(siteChecker, regex);
+
+    scheduler.add(site.interval, () => {
+
+        siteJob.run((result: SiteJobResult) => {
+            logger.appendLine(result);
+            console.log(result);
+
+            if (!result.success) {
+
+                mailer.sendMail({
+                    to: site.mailto,
+                    subject: `Site check failed for ${site.url}`,
+                    text: JSON.stringify(result)
+                });
+            }
+        });
+    });
 }
-const siteChecker: HttpRequester = new HttpRequester(url);
-const regex: RegExp = /Google Search/gm;
 
 
-const logger: Logger = new Logger('./', hostname);
-const siteJob = new SiteJob('*/5 * * * * *', siteChecker, regex);
-siteJob.run((result: SiteJobResult) => {
-    logger.appendLine(result);
-    console.log(result);
-});
+scheduler.start();
