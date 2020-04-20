@@ -18,11 +18,9 @@ export class Scheduler {
     private startInterval(intervalSeconds: number, task: () => void) {
         const millisecondsInterval: number = intervalSeconds * 1000;
 
-        console.log(`Starting interval of ${millisecondsInterval}ms`);
         // Run first immediately
         task();
         const interval: NodeJS.Timeout = setInterval(function () {
-            console.log('Running task');
             task();
         }, millisecondsInterval);
 
@@ -37,7 +35,6 @@ export class Scheduler {
     }
 
     public start(): void {
-        console.log("Starting");
         this.scheduleNext();
     }
 
@@ -54,7 +51,7 @@ export class Scheduler {
 
             // Adding next schedule in 
             const delayMillis: number = this.offsetSeconds * 1000;
-            console.log(`Setting up next schedule in ${delayMillis}ms`);
+
             // Set up next after delay
             this.timeout = setTimeout(() => {
                 this.timeout = undefined;

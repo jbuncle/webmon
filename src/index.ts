@@ -23,6 +23,8 @@ mailer.test();
 
 const logPath: string = (configuration.logPath) ? configuration.logPath : '/var/log/webmon';
 for (const site of configuration.sites) {
+    const json: string = JSON.stringify(site);
+    process.stdout.write(`Adding site '${json}' \n`);
 
     const url: string = site.url;
     const test: string = site.test;
@@ -41,8 +43,10 @@ for (const site of configuration.sites) {
     scheduler.add(site.interval, () => {
 
         siteJob.run((result: SiteJobResult) => {
+
+            // Indicate job ran
+            process.stdout.write('.');
             logger.appendLine(result);
-            console.log(result);
 
             if (!result.success) {
 
@@ -54,7 +58,10 @@ for (const site of configuration.sites) {
             }
         });
     });
+
+
 }
 
-
+process.stdout.write(`Starting `);
 scheduler.start();
+
