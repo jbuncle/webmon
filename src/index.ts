@@ -6,7 +6,7 @@ import {SiteJob, SiteJobResult} from './SiteJob';
 import {Logger} from './Logger';
 import {parse} from 'url';
 import {ConfigLoader, Configuration} from './Config';
-import {MailSettings, Mailer} from './Mailer';
+import {Mailer} from './Mailer';
 import {Scheduler} from './Scheduler';
 
 
@@ -15,8 +15,9 @@ const configLoader: ConfigLoader = new ConfigLoader(conffile);
 const configuration: Configuration = configLoader.getConfiguration();
 const scheduler: Scheduler = new Scheduler(configuration.delay);
 
-const mailSettings: MailSettings = configuration.mailSettings;
-const mailer: Mailer = new Mailer(mailSettings);
+const smtpConnectionUrl: string = configLoader.getSmtpConnectionUrl();
+const mailer: Mailer = new Mailer(smtpConnectionUrl);
+const fromAddress: string | undefined = configLoader.getFromAddress();
 mailer.test();
 
 
@@ -50,6 +51,7 @@ for (const site of configuration.sites) {
                 process.stdout.write('x');
 
                 mailer.sendMail({
+                    from: fromAddress,
                     to: site.mailto,
                     subject: `Site check failed for ${site.url}`,
                     text: JSON.stringify(result)

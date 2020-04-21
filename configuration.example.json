@@ -1,13 +1,9 @@
 {
     "delay": 30,
-    "mailSettings": {
-        "from": "you@example.co.uk",
-        "host": "smtp.host.co.uk",
-        "port": 587,
-        "secure": false,
-        "user": "username",
-        "password": "*******"
+    "smtp": {
+        "url": "smtp://username:*********@smtp.example.co.uk:587/"
     },
+    "from": "me@mail.com",
     "sites": [
         {
             "url": "http://www.google.co.uk",
