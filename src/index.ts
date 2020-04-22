@@ -8,10 +8,13 @@ import {parse} from 'url';
 import {ConfigLoader, Configuration} from './Config';
 import {Mailer} from './Mailer';
 import {Scheduler} from './Scheduler';
-
+import {Stdout} from './Stdout';
+import * as os from 'os';
 
 const conffile: string = process.argv[2];
 const configLoader: ConfigLoader = new ConfigLoader(conffile);
+const serverName: string = os.hostname();
+
 const configuration: Configuration = configLoader.getConfiguration();
 const scheduler: Scheduler = new Scheduler(configuration.delay);
 
@@ -20,11 +23,12 @@ const mailer: Mailer = new Mailer(smtpConnectionUrl);
 const fromAddress: string | undefined = configLoader.getFromAddress();
 mailer.test();
 
-
+// Setup to clear buffer based on number of sites
+const stdout: Stdout = new Stdout(configuration.sites.length);
 const logPath: string = (configuration.logPath) ? configuration.logPath : '/var/log/webmon';
 for (const site of configuration.sites) {
     const json: string = JSON.stringify(site);
-    process.stdout.write(`Adding site '${json}' \n`);
+    stdout.writeLn(`Adding site '${json}'`);
 
     const url: string = site.url;
     const test: string = site.test;
@@ -48,17 +52,16 @@ for (const site of configuration.sites) {
             logger.appendLine(result);
 
             if (!result.success) {
-                process.stdout.write('x');
+                stdout.write('x');
 
                 mailer.sendMail({
                     from: fromAddress,
                     to: site.mailto,
-                    subject: `Site check failed for ${site.url}`,
+                    subject: `Site check failed for ${site.url} [${serverName}]`,
                     text: JSON.stringify(result)
                 });
             } else {
-                process.stdout.write('.');
-
+                stdout.write('.');
             }
         });
     });
@@ -66,6 +69,6 @@ for (const site of configuration.sites) {
 
 }
 
-process.stdout.write(`Starting `);
+stdout.writeLn(`Starting `);
 scheduler.start();
 
