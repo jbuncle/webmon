@@ -1,7 +1,5 @@
-import * as RequestPromise from "request-promise-native";
-import {FullResponse, OptionsWithUri} from 'request-promise-native'
 import {RequestError} from 'request-promise-native/errors'
-
+import {HTTPRequest, HTTPResponse} from "./HTTPRequest";
 
 interface HttpResponseBase {
     url: string;
@@ -32,24 +30,21 @@ export class HttpRequester {
     }
 
     public checkSite(callback: (result: HttpResponse | HttpRequestError) => void): void {
-        const options: OptionsWithUri = {
+        const options = {
             method: 'GET',
             uri: this.url,
             headers: {
-                'User-Agent': this.userAgent
+                'user-agent': this.userAgent,
             },
-            resolveWithFullResponse: true,
             // Long timeout will tell us more about the connection
             timeout: this.timeout * 1000,
-            followAllRedirects: true,
-            strictSSL: true,
         };
 
         const startTime: number = this.time();
-        RequestPromise(options).then((value: FullResponse): void => {
-            const statusCode: number = value.statusCode;
-            const message: string = value.statusMessage;
-            const body: string = value.body;
+        HTTPRequest.fetch(options).then((fullResponse: HTTPResponse): void => {
+            const statusCode: number = fullResponse.statusCode;
+            const message: string = fullResponse.statusMessage;
+            const body: string = fullResponse.body;
             const duration: number = this.time() - startTime;
 
             const response: HttpResponse = {

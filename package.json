@@ -7,15 +7,11 @@
         "start": "ts-node src/index.ts ./configuration.json"
     },
     "dependencies": {
-        "@types/nodemailer": "^6.4.0",
-        "nodemailer": "^6.4.6",
-        "request": "^2.88.2",
-        "request-promise-native": "^1.0.8"
+        "nodemailer": "^6.4.6"
     },
     "devDependencies": {
+        "@types/nodemailer": "^6.4.0",
         "@zeit/ncc": "^0.22.1",
-        "@types/request": "^2.48.4",
-        "@types/request-promise-native": "^1.0.17",
         "ts-node": "^4.1.0",
         "typescript": "^2.9.2"
     }

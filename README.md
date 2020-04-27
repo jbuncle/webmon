@@ -30,3 +30,9 @@ See configuration.example.json
 ### Docker
 
 `docker run -it -v $(pwd)/configuration.json:/etc/webmon/configuration.json jbuncle/webmon`
+
+
+## Improvements
+
+- Site back up notification email (by watching site go from fail to pass)
+

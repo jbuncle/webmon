@@ -35,8 +35,8 @@ export class SiteJob {
                 if (statusCode !== 200) {
                     passedTest = false;
                 } else {
-
-                    const matches: RegExpExecArray | null = this.regex.exec(httpResponse.body);
+                    const bodyString = httpResponse.body;
+                    const matches: RegExpExecArray | null = this.regex.exec(bodyString);
                     passedTest = matches !== null && matches.length > 0;
                     if (passedTest === false) {
                         message = 'Failed to match response to ' + this.regex.source;
