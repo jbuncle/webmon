@@ -20,7 +20,7 @@ export interface HTTPResponse {
     statusMessage: string;
     headers: NodeJS.Dict<number | string | string[]>;
     body: string;
-    'content-encoding': string;
+    'content-encoding': string | undefined;
 }
 export class HTTPRequest {
     public static fetch(requestOptions: RequestOptions): Promise<HTTPResponse> {
@@ -55,8 +55,8 @@ export class HTTPRequest {
                     if (response.statusMessage === undefined) {
                         throw new Error("Response status message not defined");
                     }
-                    
-                    let compression: string = '';
+
+                    let compression: string | undefined;
                     // Handle compressed data
                     let buffer: Buffer = Buffer.concat(buffers);
                     if (response.headers['content-encoding'] === 'gzip') {
@@ -77,7 +77,7 @@ export class HTTPRequest {
                         statusCode: response.statusCode,
                         statusMessage: response.statusMessage,
                         body: buffer.toString(contentEncoding),
-                        'content-encoding': compression,
+                        'content-encoding': response.headers['content-encoding'],
                     };
                     resolve(responseObj);
                 });

@@ -1,4 +1,3 @@
-import {RequestError} from 'request-promise-native/errors'
 import {HTTPRequest, HTTPResponse} from "./HTTPRequest";
 
 interface HttpResponseBase {
@@ -56,7 +55,7 @@ export class HttpRequester {
                 time: startTime,
             };
             callback(response);
-        }).catch((error: RequestError): void => {
+        }).catch((error: Error): void => {
             const duration: number = this.time() - startTime;
             const response: HttpRequestError = {
                 url: this.url,
