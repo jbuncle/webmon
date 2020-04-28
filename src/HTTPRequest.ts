@@ -65,12 +65,18 @@ export class HTTPRequest {
                     }
 
                     let contentEncoding: string;
-                    if (response.headers['content-type'] !== 'text/html; charset=UTF-8') {
-                        throw new Error(`Unexpected encoding ${response.headers['content-type']}`);
-                    } else {
-                        contentEncoding = 'UTF-8';
-                    }
+                    switch (response.headers['content-type']) {
+                        case 'text/html; charset=UTF-8':
+                            contentEncoding = 'UTF-8';
+                            break;
+                        case 'text/html; charset=ISO-8859-1':
+                            contentEncoding = 'latin1';
+                            break;
 
+                        default:
+                            throw new Error(`Unexpected encoding ${response.headers['content-type']}`);
+                    }
+                    
                     const responseObj: HTTPResponse = {
                         uri: requestOptions.uri,
                         headers: response.headers,
