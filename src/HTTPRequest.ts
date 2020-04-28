@@ -64,19 +64,28 @@ export class HTTPRequest {
                         compression = response.headers['content-encoding'];
                     }
 
+                    const charset: string | undefined = this.extractCharset(response.headers['content-type']);
+
                     let contentEncoding: string;
-                    switch (response.headers['content-type']) {
-                        case 'text/html; charset=UTF-8':
+                    switch (charset) {
+                        case 'UTF-8':
                             contentEncoding = 'UTF-8';
                             break;
-                        case 'text/html; charset=ISO-8859-1':
+                        case 'ISO-8859-1':
+                        case 'latin1':
                             contentEncoding = 'latin1';
                             break;
 
+                        case '':
+                        case undefined:
+                            // Charset not defined - We should try and work it out, but for now assume UTF-8
+                            contentEncoding = 'UTF-8';
+                            break;
+                            
                         default:
-                            throw new Error(`Unexpected encoding ${response.headers['content-type']}`);
+                            contentEncoding = charset;
                     }
-                    
+
                     const responseObj: HTTPResponse = {
                         uri: requestOptions.uri,
                         headers: response.headers,
@@ -101,4 +110,20 @@ export class HTTPRequest {
             })
         })
     };
+
+    private static extractCharset(contentType?: string): string | undefined {
+        if (contentType === undefined) {
+            return undefined;
+        }
+        const regex = /charset=([A-z0-9-]+)(;|$)/;
+        const matches: RegExpExecArray | null = regex.exec(contentType);
+        if (matches !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (matches.index === regex.lastIndex) {
+                regex.lastIndex++;
+            }
+            return matches[1];
+        }
+        return undefined;
+    }
 }
