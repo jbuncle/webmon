@@ -45,25 +45,42 @@ for (const site of configuration.sites) {
     const siteJob: SiteJob = new SiteJob(siteChecker, regex);
 
     scheduler.add(site.interval, () => {
+        try {
+            siteJob.run((result: SiteJobResult) => {
 
-        siteJob.run((result: SiteJobResult) => {
+                // Indicate job ran
+                logger.appendLine(result);
 
-            // Indicate job ran
-            logger.appendLine(result);
+                if (!result.success) {
+                    stdout.write('x');
 
-            if (!result.success) {
-                stdout.write('x');
-
-                mailer.sendMail({
-                    from: fromAddress,
-                    to: site.mailto,
-                    subject: `Site check failed for ${site.url} [${serverName}]`,
-                    text: JSON.stringify(result)
-                });
+                    mailer.sendMail({
+                        from: fromAddress,
+                        to: site.mailto,
+                        subject: `Site check failed for ${site.url} [${serverName}]`,
+                        text: JSON.stringify(result)
+                    });
+                } else {
+                    stdout.write('.');
+                }
+            });
+        } catch (err) {
+            if (err instanceof Error) {
+                try {
+                    mailer.sendMail({
+                        from: fromAddress,
+                        to: site.mailto,
+                        subject: `Site check error for ${site.url} [${serverName}]`,
+                        text: err.toString()
+                    });
+                } catch (errErr) {
+                    console.log(errErr)
+                }
             } else {
-                stdout.write('.');
+                console.log(err)
             }
-        });
+        }
+
     });
 
 
