@@ -37,11 +37,23 @@ export class Mailer {
             text: message.text
         };
 
-        this.createTransporter().sendMail(mailOptions, function (error: Error | null, info: any) {
-            if (error) {
-                // Don't kill entire process if mail is undeliverable.
+        this.sendMailPromise(mailOptions)
+            .catch((error: Error) => {
                 console.error(`Failed to send mail due to '${error.message}'`);
-            }
+            });
+    }
+
+
+    public sendMailPromise(mailOptions: Mail.Options): Promise<any> {
+        return new Promise((resolve: (value?: void | PromiseLike<void> | undefined) => void, reject: (reason?: any) => void) => {
+            this.createTransporter().sendMail(mailOptions, function (error: Error | null, info: any) {
+                if (error) {
+                    // Don't kill entire process if mail is undeliverable.
+                    reject(error);
+                } else {
+                    resolve(info);
+                }
+            });
         });
     }
 }

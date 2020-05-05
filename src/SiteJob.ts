@@ -1,6 +1,5 @@
 import {HttpRequester, HttpResponse, HttpRequestError} from './HttpRequester';
 
-
 export interface SiteJobResult {
     url: string;
     statusCode?: number;
@@ -12,7 +11,6 @@ export interface SiteJobResult {
 
 export class SiteJob {
     public constructor(
-
         private readonly siteChecker: HttpRequester,
         private readonly regex: RegExp,
     ) {

@@ -19,7 +19,6 @@ export interface HttpRequestError extends HttpResponseBase {
  */
 export class HttpRequester {
 
-
     public constructor(
         private readonly url: string,
         private readonly timeout: number = 60,
