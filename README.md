@@ -36,3 +36,7 @@ See configuration.example.json
 
 - Site back up notification email (by watching site go from fail to pass)
 
+
+## Maintainer
+
+This repository is maintained by [jbuncle](https://www.jbuncle.co.uk).
