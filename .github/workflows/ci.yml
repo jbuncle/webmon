@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Remove stale lockfile
+        run: rm -f package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install CI TypeScript toolchain
+        run: npm install --no-save typescript@4.9.5 @types/node@18.19.0
+
+      - name: TypeScript validation
+        run: npx tsc --noEmit -p tsconfig.json

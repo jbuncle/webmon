@@ -66,10 +66,10 @@ export class HTTPRequest {
 
                     const charset: string | undefined = this.extractCharset(response.headers['content-type']);
 
-                    let contentEncoding: string;
+                    let contentEncoding: BufferEncoding;
                     switch (charset) {
                         case 'UTF-8':
-                            contentEncoding = 'UTF-8';
+                            contentEncoding = 'utf8';
                             break;
                         case 'ISO-8859-1':
                         case 'latin1':
@@ -79,11 +79,11 @@ export class HTTPRequest {
                         case '':
                         case undefined:
                             // Charset not defined - We should try and work it out, but for now assume UTF-8
-                            contentEncoding = 'UTF-8';
+                            contentEncoding = 'utf8';
                             break;
                             
                         default:
-                            contentEncoding = charset;
+                            contentEncoding = charset as BufferEncoding;
                     }
 
                     const responseObj: HTTPResponse = {
