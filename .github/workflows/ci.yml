@@ -26,8 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install compatible Node.js type definitions
-        run: npm install --no-save @types/node@10.17.60
+      - name: Install CI TypeScript toolchain
+        run: npm install --no-save typescript@4.9.5 @types/node@18.19.0
 
       - name: TypeScript validation
         run: npx tsc --noEmit -p tsconfig.json
