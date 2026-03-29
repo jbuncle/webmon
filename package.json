@@ -7,7 +7,7 @@
         "start": "ts-node src/index.ts ./configuration.json"
     },
     "dependencies": {
-        "nodemailer": "^6.4.6"
+        "nodemailer": "^8.0.4"
     },
     "devDependencies": {
         "@types/nodemailer": "^6.4.0",
